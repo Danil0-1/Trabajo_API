@@ -71,4 +71,7 @@ Un proyecto en repositorio de GitHub, con conexión lista, tablas funcionando y 
 
 **Agradecimientos y Responsables:**
 
+⚠️ NOTA: La API está implementada correctamente, pero no fue probada desde Postman por inconvenientes con la configuración de Apache/.htaccess. Toda la lógica fue programada de acuerdo al taller 😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭.
+
+
 - Santiago, **Kevin** y Julian. 🗿.

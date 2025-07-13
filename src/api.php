@@ -5,8 +5,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 $uri = explode('/', trim($_SERVER['REQUEST_URI'], '/'));
 
-$recurso = $uri[1] ?? null;
-$id = $uri[1] ?? null;
+$recurso = $uri[2] ?? null;
+$id = $uri[3] ?? null;
 header('Content-Type: application/json');
 
 if ($recurso !== 'productos' && $recurso !== 'categorias' && $recurso !== 'promociones') {
@@ -84,6 +84,114 @@ if ($recurso === "productos") {
             $stmt->execute([
                 $id
             ]);
+
+            echo json_encode($response);
+            break;
+    }
+}
+
+if ($recurso === "categorias") {
+    switch ($method) {
+        case 'GET':
+            if ($id) {
+                $stmt = $pdo->prepare("SELECT * FROM categorias WHERE id = ?");
+                $stmt->execute([$id]);
+                $response = $stmt->fetch(PDO::FETCH_ASSOC);
+            } else {
+                $stmt = $pdo->query("SELECT * FROM categorias");
+                $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }
+            echo json_encode($response);
+            break;
+
+        case 'POST':
+            $data = json_decode(file_get_contents('php://input'), true);
+            $stmt = $pdo->prepare("INSERT INTO categorias (nombre) VALUES (?)");
+            $stmt->execute([$data['nombre']]);
+            http_response_code(201);
+            $data['id'] = $pdo->lastInsertId();
+            echo json_encode($data);
+            break;
+
+        case 'PUT':
+            if (!$id) {
+                http_response_code(400);
+                echo json_encode(['error' => 'ID no encontrado', 'code' => 400]);
+                exit;
+            }
+            $data = json_decode(file_get_contents('php://input'), true);
+            $stmt = $pdo->prepare("UPDATE categorias SET nombre = ? WHERE id = ?");
+            $stmt->execute([$data['nombre'], $id]);
+            $data['id'] = $id;
+            echo json_encode($data);
+            break;
+
+        case 'DELETE':
+            if (!$id) {
+                http_response_code(400);
+                echo json_encode(['error' => 'ID no encontrado', 'code' => 400]);
+                exit;
+            }
+            $stmt = $pdo->prepare("SELECT * FROM categorias WHERE id = ?");
+            $stmt->execute([$id]);
+            $response = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $stmt = $pdo->prepare("DELETE FROM categorias WHERE id = ?");
+            $stmt->execute([$id]);
+
+            echo json_encode($response);
+            break;
+    }
+}
+
+if ($recurso === "promociones") {
+    switch ($method) {
+        case 'GET':
+            if ($id) {
+                $stmt = $pdo->prepare("SELECT * FROM promociones WHERE id = ?");
+                $stmt->execute([$id]);
+                $response = $stmt->fetch(PDO::FETCH_ASSOC);
+            } else {
+                $stmt = $pdo->query("SELECT * FROM promociones");
+                $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }
+            echo json_encode($response);
+            break;
+
+        case 'POST':
+            $data = json_decode(file_get_contents('php://input'), true);
+            $stmt = $pdo->prepare("INSERT INTO promociones (descripcion, descuento, producto_id) VALUES (?, ?, ?)");
+            $stmt->execute([$data['descripcion'], $data['descuento'], $data['producto_id']]);
+            http_response_code(201);
+            $data['id'] = $pdo->lastInsertId();
+            echo json_encode($data);
+            break;
+
+        case 'PUT':
+            if (!$id) {
+                http_response_code(400);
+                echo json_encode(['error' => 'ID no encontrado', 'code' => 400]);
+                exit;
+            }
+            $data = json_decode(file_get_contents('php://input'), true);
+            $stmt = $pdo->prepare("UPDATE promociones SET descripcion = ?, descuento = ?, producto_id = ? WHERE id = ?");
+            $stmt->execute([$data['descripcion'], $data['descuento'], $data['producto_id'], $id]);
+            $data['id'] = $id;
+            echo json_encode($data);
+            break;
+
+        case 'DELETE':
+            if (!$id) {
+                http_response_code(400);
+                echo json_encode(['error' => 'ID no encontrado', 'code' => 400]);
+                exit;
+            }
+            $stmt = $pdo->prepare("SELECT * FROM promociones WHERE id = ?");
+            $stmt->execute([$id]);
+            $response = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $stmt = $pdo->prepare("DELETE FROM promociones WHERE id = ?");
+            $stmt->execute([$id]);
 
             echo json_encode($response);
             break;
