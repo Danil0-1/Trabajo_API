@@ -24,3 +24,16 @@ CREATE TABLE promociones (
     producto_id INT,
     FOREIGN KEY (producto_id) REFERENCES productos(id)
 );
+
+INSERT INTO categorias (nombre) VALUES ('Electrodomesticos'), ('Ropa'), ('Comida');
+
+INSERT INTO productos (nombre, precio, categoria_id) VALUES
+('Camisa', 29.99, 2),
+('Smartphone', 1500.00, 1),
+('Pizza', 20.00, 3),
+('Auriculares', 250.00, 1),
+('Hamburguesa', 15.00, 3);
+
+INSERT INTO promociones (descripcion, descuento, producto_id) VALUES
+('Descuento', 25.00, 1),
+('Promo de navidad', 40.00, 2);
